@@ -1,130 +1,282 @@
-﻿internal static class Geometry
+﻿internal class Geometry
 {
-    internal static void PrintSnailChar(int row, int column, bool isRight = true)
+    private static List<string> GetZebra(
+    int width,
+    int height,
+    int LineBold = 1,
+    bool isVertical = false,
+    char symbol = '*',
+    char symbolClear = ' ')
     {
-        char[,] Snail = new char[row, column];
-        int direction = 1;
-        for (int i = 0; i < row; i++)
+        List<string> result = new();
+        string horiz = "";
+        for (int r = 0; r < height; r++)
         {
-            for (int j = 0; j < column; j++)
+            if (isVertical == false)
             {
-                Snail[i, j] = '▯';
-            }
-        }
-        int a = 0, b = 0, c = 0, d = 0;
-        while (true)
-        {
-            if (a >= column || b >= row || c >= column || d >= row)
-            {
-                break;
-            }
-            if (isRight == true)
-            {
-                if (direction == 1)
-                {
-                    if (a > 1)
-                    {
-                        for (int i = 0 + a - 1; i < column - 1 - a; i++)
-                        {
-                            Snail[a, i] = '▮';
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0 + a; i < column - 1 - a; i++)
-                        {
-                            Snail[a, i] = '▮';
-                        }
-                    }
-                    a += 2;
-                    direction = 2;
-                }
-                if (direction == 2)
-                {
-                    for (int i = 0 + b; i < row - 1 - b; i++)
-                    {
-                        Snail[i, column - 2 - b] = '▮';
-                    }
-                    b += 2;
-                    direction = 3;
-                }
-                if (direction == 3)
-                {
-                    for (int i = column - b - 1; i > c; i--)
-                    {
-                        Snail[row - 2 - c, i] = '▮';
-                    }
-                    c += 2;
-                    direction = 4;
-                }
-                if (direction == 4)
-                {
-                    for (int i = row - c; i > c - 1; i--)
-                    {
-                        Snail[i, d] = '▮';
-                    }
-                    d += 2;
-                    direction = 1;
-                }
+                if (r % 2 == 0)
+                    for (int i = 0; i < LineBold; i++)
+                        result.Add(new string(symbol, width));
+                else
+                    for (int i = 0; i < LineBold; i++)
+                        result.Add(new string(symbolClear, width));
             }
             else
             {
-                if (direction == 1)
+                for (int i = 0; i < width; i++)
                 {
-                    if (a > 1)
+                    for (int j = 0; j < LineBold; j++)
                     {
-                        for (int i = column - 1 - a; i > 0 + a - 1; i--)
+                        horiz += symbol;
+                    }
+                    for (int c = 0; c < LineBold; c++)
+                    {
+                        horiz += symbolClear;
+                    }
+                }
+                result.Add(horiz);
+                horiz = "";
+            }
+        }
+
+        return result;
+    }
+
+    private static List<string> GetClock(
+    int width,
+    int height,
+    bool isFill = true,
+    char symbol = '*',
+    char symbolClear = ' ')
+    {
+        List<string> result = new();
+
+        for (int r = 0; r < height; r++)
+        {
+            if (isFill == true)
+            {
+                if (r < height / 2)
+                    result.Add(new string(symbolClear, r) +
+                    new string(symbol, width - r * 2) +
+                    new string(symbolClear, r));
+                else
+                    result.Add(new string(symbolClear, height - r - 1) +
+                    new string(symbol, width - (height - r - 1) * 2) +
+                    new string(symbolClear, height - r - 1));
+            }
+            else
+            {
+                if (r == 0 || r == height - 1)
+                {
+                    result.Add(new string(symbol, width));
+                }
+                else
+                {
+                    if (r < height / 2)
+                        result.Add(new string(symbolClear, r) +
+                        new string(symbol, 1) +
+                        new string(symbolClear, width - r * 2 - 2) +
+                        new string(symbol, 1) +
+                        new string(symbolClear, r));
+                    else
+                        result.Add(new string(symbolClear, height - r - 1) +
+                        new string(symbol, 1) +
+                        new string(symbolClear, width - (height - r - 1) * 2 - 2) +
+                        new string(symbol, 1) +
+                        new string(symbolClear, height - r - 1));
+                }
+
+            }
+
+        }
+        return result;
+    }
+
+    private static List<string> GetSnail(
+    int width,
+    int height,
+    bool isRight = true)
+    {
+        char symbol = '▮';
+        char symbolClear = '▯';
+        string EndStr = $"{symbolClear}{symbol}";
+        string StartStr = $"{symbol}{symbolClear}";
+        List<string> result = new();
+
+        string boof = "";
+        int k = 0;
+        for (int r = 0; r < height + 0; r++)
+        {
+            if (r == 0 || r == height - 1)
+            {
+                result.Add(new string(symbol, width));
+                continue;
+            }
+            if (r < height / 2 + 1)
+            {
+                if (r % 2 == 1)
+                {
+                    boof = new string(symbolClear, width - (r * 2));
+                    for (int i = 0; i < (r / 2) + 1; i++)
+                    {
+                        if (isRight == true)
                         {
-                            Snail[a, i] = '▮';
+                            boof += EndStr;
+                            if (i > 0)
+                            {
+                                boof = StartStr + boof;
+                            }
                         }
+                        else
+                        {
+                            boof = StartStr + boof;
+                            if (i > 0)
+                            {
+                                boof += EndStr;
+                            }
+                        }
+                    }
+                    result.Add(boof);
+                    boof = "";
+                }
+                else
+                {
+                    boof = new string(symbol, width - (r + k) + 1);
+                    for (int i = 0; i < r - (i + 1); i++)
+                    {
+                        if (isRight == true)
+                        {
+                            if (i == 0)
+                            {
+                                boof += EndStr;
+                            }
+                            else
+                            {
+                                boof += EndStr;
+                                boof = StartStr + boof;
+                            }
+                        }
+                        else
+                        {
+                            if (i == 0)
+                            {
+                                boof = StartStr + boof;
+                            }
+                            else
+                            {
+                                boof += EndStr;
+                                boof = StartStr + boof;
+                            }
+                        }
+                    }
+                    result.Add(boof);
+                    boof = "";
+                }
+                k += 1;
+            }
+            else
+            {
+                if (r % 2 == 1)
+                {
+                    if (height % 2 == 0)
+                    {
+                        boof = new string(symbolClear, width - 2 - ((height - r) * 2));
+                        for (int i = 0; i < ((height - r + 1) / 2); i++)
+                        {
+                            boof = StartStr + boof;
+                            boof += EndStr;
+                        }
+                        result.Add(boof);
+                        boof = "";
                     }
                     else
                     {
-                        for (int i = column - 1 - a; i > 0 + a; i--)
+                        boof = new string(symbolClear, width - ((height - r) * 2));
+                        for (int i = 0; i < ((height - r + 1) / 2); i++)
                         {
-                            Snail[a, i] = '▮';
+                            boof = StartStr + boof;
+                            boof += EndStr;
                         }
+                        result.Add(boof);
+                        boof = "";
                     }
-                    a += 2;
-                    direction = 2;
                 }
-                if (direction == 2)
+                else
                 {
-                    for (int i = 0 + b; i < row - 1 - b; i++)
+                    if (height % 2 == 0)
                     {
-                        Snail[i, b] = '▮';
+                        boof = new string(symbol, width - ((height - r) + k) + 1);
+                        for (int i = 0; i < (height - r + 2) - (i + 1); i++)
+                        {
+                            if (i == 0)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                if (i > 0)
+                                    boof += EndStr;
+                                boof = StartStr + boof;
+                            }
+                        }
+                        result.Add(boof);
+                        boof = "";
                     }
-                    b += 2;
-                    direction = 3;
-                }
-                if (direction == 3)
-                {
-                    for (int i = c; i < column - c - 1; i++)
+                    else
                     {
-                        Snail[row - 2 - c, i] = '▮';
+                        boof = new string(symbol, width - ((height - r) + k) + 2);
+                        for (int i = 0; i < (height - r + 2) - (i + 1); i++)
+                        {
+                            if (i == 0)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                if (i > 0)
+                                    boof += EndStr;
+                                boof = StartStr + boof;
+                            }
+                        }
+                        result.Add(boof);
+                        boof = "";
                     }
-                    c += 2;
-                    direction = 4;
                 }
-                if (direction == 4)
-                {
-                    for (int i = row - c - 1; i > c - 1; i--)
-                    {
-                        Snail[i, column - 2 - d] = '▮';
-                    }
-                    d += 2;
-                    direction = 1;
-                }
+                k -= 1;
             }
         }
-        for (int i = 0; i < row - 1; i++)
-        {
-            for (int j = 0; j < column - 1; j++)
-            {
-                Console.Write(Snail[i, j]);
-            }
-            Console.WriteLine();
-        }
+        return result;
+    }
+
+
+
+    internal static void PrintZebra(
+    int width,
+    int height,
+    int LineBold = 1,
+    bool isVertical = false,
+    char symbol = '*',
+    char symbolClear = ' ')
+    {
+        Console.WriteLine(string.Join(Environment.NewLine, GetZebra(width, height, LineBold, isVertical, symbol, symbolClear)));
+    }
+
+    internal static void PrintClock(
+    int width,
+    int height,
+    bool isFill = true,
+    char symbol = '*',
+    char symbolClear = ' ')
+    {
+        Console.WriteLine(string.Join(Environment.NewLine, GetClock(width, height, isFill, symbol, symbolClear)));
+    }
+
+    internal static void PrintSnail(
+    int width,
+    int height,
+    bool isRight = true)
+    {
+        Console.WriteLine(string.Join(Environment.NewLine, GetSnail(width, height, isRight)));
     }
 }
 
@@ -133,6 +285,8 @@ class Program
     static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Geometry.PrintSnailChar(10, 10);
+        Geometry.PrintZebra(5, 5, 4);
+        Geometry.PrintClock(30, 30, false);
+        Geometry.PrintSnail(10, 10);
     }
 }
